@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talking Time</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Pattaya" rel="stylesheet">
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/chatroom.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2&display=swap" rel="stylesheet">
+
+  </head>
+
+	<body>
+	
+	<!-- Chat box section -->
+	<section class="messenger">
+		<header class="headerBar">
+			<div>
+				<h5 class="roomTitle"></h5>
+				<h6>Author: Blandon Tang</h6>
+			</div>
+		</header>
+		
+		<main id="messagesArea"> <!-- multiple br is a quick hack to start at bottom-->
+			<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+			<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+		</main>
+		
+		<form id="messageForm" action="" autocomplete="off">
+			<input id="messageInput" type="text" placeholder="Type message here..."></input>
+			<input type="submit" class="msgSendBtn" value="Send"></input>
+		</form>
+	</section>
+	
+	<!-- Online Users Section-->
+	<section class="activeUserDisplay">
+		<header class="headerBar">
+			<h5 style="padding-left: 2.3em; padding-top: 0.8em;">Online Users</h5>
+		</header>
+		<div id='usersContainer'>
+		</div>
+	</section>
+    
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+   	<script src="http://chancejs.com/chance.js"></script>
+	<script src="/main.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    
+	</body>
+</html>
+
+
+
+
