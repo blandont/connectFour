@@ -14,7 +14,7 @@ var chance = require('chance').Chance();
 
 var connectedUsers = {}; // object of all connected user objects
 var chatHistory = [];
-var onlineRooms = {};
+var onlineRooms = [];
 
 app.use(express.static('assets'));
 
@@ -44,6 +44,11 @@ io.on('connection', function(socket) {
 	});
 
 	// socket.emit('displayChatLog', {chatHistory});
+	socket.on('createNewRoom', function(req){
+		onlineRooms.push(req.roomName);
+		// console.log(req.roomName);
+		console.log(onlineRooms);
+	});
 
 	socket.on('newUser', function(req, callback) {
 		let nameTaken = false;
@@ -62,24 +67,35 @@ io.on('connection', function(socket) {
 				console.log("name taken, trying new name: " + req.username);
             }
 		});
-		
-		console.log(req.username + " has joined the chatroom");
-		connectedUsers[socket.id] = req;
-		connectedUsers[socket.id].userID = socket.id;
-		console.log(req.room);
-		socket.join(req.room);
-		// console.log(connectedUsers);
-		// console.log(chatHistory);
+		// Throw error if room does not exist
+		if(onlineRooms.indexOf(req.room) == -1){
+			console.log(req.room + " room does not exist");
+			callback({
+				roomExists: false,
+				error: 'Invalid game code!'
+			});
+		}
+		else{ // otherwise join game
+			// console.log(req.username + " has joined the chatroom");
+			connectedUsers[socket.id] = req;
+			connectedUsers[socket.id].userID = socket.id;
+			console.log(onlineRooms);
+			socket.join(req.room);
 
-		io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
-		// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
+			io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
+			// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
 
-		socket.broadcast.to(req.room).emit('message', {
-			username: 'System',
-			text: req.username + ' has joined!',
-			timestamp: moment().valueOf(),
-			color: '#808080'
-		});
+			socket.broadcast.to(req.room).emit('message', {
+				username: 'System',
+				text: req.username + ' has joined!',
+				timestamp: moment().valueOf(),
+				color: '#808080'
+			});
+
+			callback({
+				roomExists: true
+			});
+		}
 	});
 
 	

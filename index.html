@@ -21,16 +21,18 @@
 			<div >
 				<form id="login-form">
 					<h2>Connect Four</h2>
-					<input type="text" name="username" placeholder="Enter your username" >
-					<input type="text" name="room" placeholder="Enter a unique game code" >
-					<input type="submit" value="Join Chat">
+					<input type="text" name="username" autocomplete="off" placeholder="Enter your username" >
+					<br>
+					<input type="text" name="room" autocomplete="off" placeholder="Enter a unique game code" >
+					<p id="errorMsg"></p>
+					<input type="submit" value="Join Game">
 				</form>
 			</div>	
 		</div>
 		<div >
 			<div >
-				<p>Give this unique code to your friend: </p>
-				<h3 id='uniqueCode'>test</h3>
+				<p>Give this unique code to your friend (and enter it yourself): </p>
+				<h3 id='uniqueCode'>someUniqueCode</h3>
 				<p>or enter a code given to you by a friend</p>
 				<p>The game will begin when a valid code is entered</p>	
 			</div>	
@@ -59,15 +61,7 @@
 			<input type="submit" class="msgSendBtn" value="Send"></input>
 		</form>
 	</section>
-	
-	<!-- <section class="activeUserDisplay">
-		<header class="headerBar">
-			<h5 style="padding-left: 2.3em; padding-top: 0.8em;">Online Users</h5>
-		</header>
-		<div id='usersContainer'>
-		</div>
-	</section> -->
-    
+	    
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>

@@ -20,6 +20,10 @@ socket.on('connect', function() {
 	$('.messenger').hide();
 	// $('.activeUserDisplay').hide();
 	$('input[name=username]').val(randomUsername());
+	let test = randomUsername();
+	$('#uniqueCode').text(test);
+	
+	socket.emit('createNewRoom',{roomName: test});
 
 	// cookie check
 	let fillerName = 'newUserName';
@@ -44,12 +48,16 @@ socket.on('connect', function() {
 			// room: 'chatroom', // this can be dynamic to support multiple users
 			color: '#000000', // default nickname color is black
 			cookie: hasCookie
+		}, function(cbData){
+			if (cbData.roomExists == false){
+				$('#errorMsg').text(cbData.error);
+			}
+			// else success
+			else{
+				$('.welcomeBox').hide('slow');
+				$('.messenger').show();
+			}
 		});
-		// $('.welcomeScreen').hide('slow');
-		$('.welcomeBox').hide('slow');
-		$('.messenger').show();
-		// $('.activeUserDisplay').show();
-
 	});
 
 	// Create random username
