@@ -14,6 +14,7 @@ var chance = require('chance').Chance();
 
 var connectedUsers = {}; // object of all connected user objects
 var chatHistory = [];
+var onlineRooms = {};
 
 app.use(express.static('assets'));
 
@@ -25,7 +26,6 @@ app.get('/', function(req, res){
 io.on('connection', function(socket) {
 	console.log('A user has connected with ID: ' + socket.id);
 	// console.log(connectedUsers);
-	// io.emit('usersPresent', connectedUsers);
 	
 	socket.on('disconnect', function() {
 		var userData = connectedUsers[socket.id];
@@ -66,12 +66,13 @@ io.on('connection', function(socket) {
 		console.log(req.username + " has joined the chatroom");
 		connectedUsers[socket.id] = req;
 		connectedUsers[socket.id].userID = socket.id;
+		console.log(req.room);
 		socket.join(req.room);
 		// console.log(connectedUsers);
 		// console.log(chatHistory);
 
 		io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
-		io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
+		// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
 
 		socket.broadcast.to(req.room).emit('message', {
 			username: 'System',
@@ -187,5 +188,7 @@ io.on('connection', function(socket) {
 	});
 });
 
-http.listen(3030);
+http.listen(3030, function(){
+	console.log("listening on 3030");
+});
 // http.listen(process.env.PORT || 3000);

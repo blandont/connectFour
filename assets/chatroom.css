@@ -30,7 +30,7 @@ body {
 
 
 /* Begin style for container */
-.messenger, .activeUserDisplay {
+.messenger, .welcomeBox {
     display: flex;
     flex-flow: column wrap;
     justify-content: space-between;
@@ -45,8 +45,8 @@ body {
     max-width: 900px;
     background: #fff;
 }
-.activeUserDisplay {
-    max-width: 250px;
+.welcomeBox {
+    max-width: 700px;
     background: #eee;
 }
 .headerBar {
@@ -82,23 +82,17 @@ body {
     font-family: 'Exo 2';
     font-size: 1.3em;
 }
+
 #usersContainer{
-    margin-bottom: 5em;
+    position: absolute;
+    /* align calculator top left corner to centre of page */
+    top: 50%;
+    left: 50%;
+    /* align centre of calculator to centre of page - move left by 50% of width and move up by 50% of height */
+    transform: translate(-50%, -50%);
+    /* width: 600px; */
 }
-#usersContainer{
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-}
-#usersContainer::-webkit-scrollbar {
-    width: 6px;
-}
-#usersContainer::-webkit-scrollbar-track {
-    background: #ddd;
-}
-#usersContainer::-webkit-scrollbar-thumb {
-    background: #bdbdbd;
-}
+
 
 
 /* Begin message styling */

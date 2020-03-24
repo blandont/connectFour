@@ -13,7 +13,33 @@
   </head>
 
 	<body>
-	
+	<section class="welcomeBox">
+	<!-- <div class="welcomeScreen"> -->
+	<div id='usersContainer'>
+		
+		<div >
+			<div >
+				<form id="login-form">
+					<h2>Connect Four</h2>
+					<input type="text" name="username" placeholder="Enter your username" >
+					<input type="text" name="room" placeholder="Enter a unique game code" >
+					<input type="submit" value="Join Chat">
+				</form>
+			</div>	
+		</div>
+		<div >
+			<div >
+				<p>Give this unique code to your friend: </p>
+				<h3 id='uniqueCode'>test</h3>
+				<p>or enter a code given to you by a friend</p>
+				<p>The game will begin when a valid code is entered</p>	
+			</div>	
+		</div>
+
+	</div>
+	<!-- </div> -->
+	</section>
+
 	<!-- Chat box section -->
 	<section class="messenger">
 		<header class="headerBar">
@@ -34,14 +60,13 @@
 		</form>
 	</section>
 	
-	<!-- Online Users Section-->
-	<section class="activeUserDisplay">
+	<!-- <section class="activeUserDisplay">
 		<header class="headerBar">
 			<h5 style="padding-left: 2.3em; padding-top: 0.8em;">Online Users</h5>
 		</header>
 		<div id='usersContainer'>
 		</div>
-	</section>
+	</section> -->
     
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 	<script src="/socket.io/socket.io.js"></script>

@@ -17,6 +17,11 @@ var usersOnline = {}; // equivalent to connectedUsers in serverside
 
 socket.on('connect', function() {
 	// check if cookie is present
+	$('.messenger').hide();
+	// $('.activeUserDisplay').hide();
+	$('input[name=username]').val(randomUsername());
+
+	// cookie check
 	let fillerName = 'newUserName';
 	let hasCookie = false;
 	if (document.cookie.split(';').filter((item) => item.trim().startsWith('username=')).length) {
@@ -25,12 +30,42 @@ socket.on('connect', function() {
 		// console.log(fillerName);
 		hasCookie = true;
 	}
-    socket.emit('newUser', {
-	    username: fillerName,
-		room: 'chatroom',
-		color: '#000000', // default nickname color is black
-		cookie: hasCookie
+
+	$loginForm.on('submit', function(e) {
+		e.preventDefault();
+
+		$username = $.trim($loginForm.find('input[name=username]').val());
+		let roomName = $.trim($loginForm.find('input[name=room]').val());
+
+		// let tester = Math.floor((Math.random() * 3) + 1); // between 1 and 3
+		socket.emit('newUser', {
+			username: $username, // fillerName,
+			room: roomName,
+			// room: 'chatroom', // this can be dynamic to support multiple users
+			color: '#000000', // default nickname color is black
+			cookie: hasCookie
+		});
+		// $('.welcomeScreen').hide('slow');
+		$('.welcomeBox').hide('slow');
+		$('.messenger').show();
+		// $('.activeUserDisplay').show();
+
 	});
+
+	// Create random username
+	function randomUsername() {
+		let parts = [];
+		parts.push( ["Overly", "Partly", "Barely", "Slightly", "Fairly", "Largely"] );
+		parts.push( ["Zealous", "Shy", "Quiet", "Loud", "Excited", "Confused", "Uncomfortable"] );
+		parts.push( ["Strokes", "RHCP", "BROCKHAMPTON", "Islands", "Daftpunk", "MGMT", "Mitski", "Morrissey", "Beatles"] );
+	  
+		username = "";
+		for( part of parts) {
+			username += part[Math.floor(Math.random()*part.length)];
+		}
+		username += 'Fan';
+		return username;
+	}
 });
 
 socket.on('message', function(message) {
@@ -70,25 +105,14 @@ socket.on('message', function(message) {
 						'</div></div>');
 	}
 	scrollToBottom('messagesArea');
-});
 
-socket.on('showChatLog', function(chatHistory){
-	// console.log(chatHistory);
-	var $message = $('#messagesArea');
-	chatHistory.forEach(function(message){
-		var momentTimestamp = moment.utc(message.time);
-		$message.append('<div class="msg left-msg"><div class="msgBubble">' +
-		'<div class="msgInfo">' +
-			'<div class="msgInfo-name">' + message.user + '</div>' +
-			'<div class="msgInfo-time">' + momentTimestamp.local().format('h:mma') + '</div>' +
-		'</div>' +
-		'<div class="msg-text">' +
-			message.msg +
-		'</div>' +
-	'</div></div>');
-	});
-	scrollToBottom('messagesArea');
-})
+	function scrollToBottom(id) {
+		let section = document.getElementById(id);
+		$('#' + id).animate({
+			scrollTop: section.scrollHeight - section.clientHeight
+		}, 450);
+	}
+});
 
 socket.on('usersPresent', function(connectedUsers){
 	usersOnline = connectedUsers;
@@ -103,9 +127,10 @@ socket.on('usersPresent', function(connectedUsers){
 		allUsers += "<div class='userDisplay'><span style='color: "+ connectedUsers[socketID].color +";'><strong>" + connectedUsers[socketID].username + "</strong></span></div>"; // change color of name in online list as well
 		// console.log(allUsers);
 	});
-	$('#usersContainer').html(allUsers); // display all users
+	// $('#usersContainer').html(allUsers); // display all users
 })
 
+// Sending Messages
 $msgForm.on('submit', function(e) {
 	e.preventDefault(); // prevent default form reload
 	let $message = $('#messageInput');
@@ -126,9 +151,3 @@ $msgForm.on('submit', function(e) {
 	$message.val('');
 });
 
-function scrollToBottom(id) {
-	let section = document.getElementById(id);
-	$('#' + id).animate({
-		scrollTop: section.scrollHeight - section.clientHeight
-	}, 450);
-}
