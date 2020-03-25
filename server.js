@@ -39,6 +39,7 @@ io.on('connection', function(socket) {
 			});
 			delete connectedUsers[socket.id];
 			io.emit('usersPresent', connectedUsers); // write clientside userlist
+			io.emit('roomsOnline', onlineRooms); // write clientside room list
 			// console.log(connectedUsers);
 		}
 	});
@@ -67,6 +68,8 @@ io.on('connection', function(socket) {
 				console.log("name taken, trying new name: " + req.username);
             }
 		});
+
+		
 		// Throw error if room does not exist
 		if(onlineRooms.indexOf(req.room) == -1){
 			console.log(req.room + " room does not exist");
@@ -80,21 +83,34 @@ io.on('connection', function(socket) {
 			connectedUsers[socket.id] = req;
 			connectedUsers[socket.id].userID = socket.id;
 			console.log(onlineRooms);
+
 			socket.join(req.room);
+			var connectedClients = io.nsps['/'].adapter.rooms[req.room];
 
-			io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
-			// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
+			// console.log(connectedClients.length); // number of clients in chatroom
+			if (connectedClients.length >= 3){ // 3 instead of 2 because of delayed execution
+				callback({
+					roomExists: false,
+					error: 'The gameroom is already full'
+				});
+			}
+			else{
+				io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
+				io.emit('roomsOnline', onlineRooms); // write clientside room list
+				// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
 
-			socket.broadcast.to(req.room).emit('message', {
-				username: 'System',
-				text: req.username + ' has joined!',
-				timestamp: moment().valueOf(),
-				color: '#808080'
-			});
+				socket.broadcast.to(req.room).emit('message', {
+					username: 'System',
+					text: req.username + ' has joined!',
+					timestamp: moment().valueOf(),
+					color: '#808080'
+				});
 
-			callback({
-				roomExists: true
-			});
+				callback({
+					roomExists: true
+				});
+			}
+			
 		}
 	});
 
@@ -144,6 +160,7 @@ io.on('connection', function(socket) {
 					connectedUsers[socket.id].username = newName;
 					console.log("Name changed to: " + newName);
 					io.emit('usersPresent', connectedUsers);
+					io.emit('roomsOnline', onlineRooms); // write clientside room list
 					// console.log(connectedUsers);
 				}
 				else{
@@ -176,6 +193,7 @@ io.on('connection', function(socket) {
 					// console.log('valid RGB value: ' + rgbValue);
 					connectedUsers[socket.id].color = rgbValue;
 					io.emit('usersPresent', connectedUsers);
+					io.emit('roomsOnline', onlineRooms); // write clientside room list
 					// console.log(connectedUsers);
 				}
 				else{

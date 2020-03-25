@@ -13,8 +13,8 @@
   </head>
 
 	<body>
+	<!-- Welcome screen section-->
 	<section class="welcomeBox">
-	<!-- <div class="welcomeScreen"> -->
 	<div id='usersContainer'>
 		
 		<div >
@@ -27,6 +27,7 @@
 					<p id="errorMsg"></p>
 					<input type="submit" value="Join Game">
 				</form>
+				
 			</div>	
 		</div>
 		<div >
@@ -35,11 +36,16 @@
 				<h3 id='uniqueCode'>someUniqueCode</h3>
 				<p>or enter a code given to you by a friend</p>
 				<p>The game will begin when a valid code is entered</p>	
-			</div>	
+			</div>
+			<div>
+				<form id="randomGame">
+					<input type="submit" value="Join Random Game">
+				</form>
+			</div>
+
 		</div>
 
 	</div>
-	<!-- </div> -->
 	</section>
 
 	<!-- Chat box section -->
@@ -60,6 +66,18 @@
 			<input id="messageInput" type="text" placeholder="Type message here..."></input>
 			<input type="submit" class="msgSendBtn" value="Send"></input>
 		</form>
+	</section>
+
+	<!-- Theme selector-->
+	<section>
+		<div>
+			<input name='theme' type='radio' id='theme1' checked>
+			<label for='theme1'> Theme 1</label>
+			<input name='theme' type='radio' id='theme2'>
+			<label for='theme2'> Theme 2</label>
+			<input name='theme' type='radio' id='theme3'>
+			<label for='theme3'> Theme 3</label>
+		</div>
 	</section>
 	    
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>

@@ -14,17 +14,10 @@ var $msgForm = $('#messageForm');
 var $messageArea = $('#messagesArea');
 let $username;
 var usersOnline = {}; // equivalent to connectedUsers in serverside
+var gameRoomsOnline = []; // equivalent to onlineRooms in serverside
 
 socket.on('connect', function() {
 	// check if cookie is present
-	$('.messenger').hide();
-	// $('.activeUserDisplay').hide();
-	$('input[name=username]').val(randomUsername());
-	let test = randomUsername();
-	$('#uniqueCode').text(test);
-	
-	socket.emit('createNewRoom',{roomName: test});
-
 	// cookie check
 	let fillerName = 'newUserName';
 	let hasCookie = false;
@@ -34,6 +27,16 @@ socket.on('connect', function() {
 		// console.log(fillerName);
 		hasCookie = true;
 	}
+
+	$('.messenger').hide();
+	// if hascookie == false then generate a username
+	$('input[name=username]').val(randomUsername());
+	let test = randomUsername();
+	$('#uniqueCode').text(test);
+	
+	// potentially also create a room for random ones?
+	socket.emit('createNewRoom',{roomName: test});
+	// socket.emit('createNewRoomRandomGames',{roomName: test});
 
 	$loginForm.on('submit', function(e) {
 		e.preventDefault();
@@ -59,6 +62,31 @@ socket.on('connect', function() {
 			}
 		});
 	});
+
+	$('#randomGame').on('submit', function(e){
+		e.preventDefault();
+		// alert('join random code here');
+		$username = $.trim($loginForm.find('input[name=username]').val());
+		let roomName = $.trim($loginForm.find('input[name=room]').val());
+
+		// let tester = Math.floor((Math.random() * 3) + 1); // between 1 and 3
+		socket.emit('newUser', {
+			username: $username, // fillerName,
+			room: roomName,
+			// room: 'chatroom', // this can be dynamic to support multiple users
+			color: '#000000', // default nickname color is black
+			cookie: hasCookie
+		}, function(cbData){
+			if (cbData.roomExists == false){
+				$('#errorMsg').text(cbData.error);
+			}
+			// else success
+			else{
+				$('.welcomeBox').hide('slow');
+				$('.messenger').show();
+			}
+		});
+	})
 
 	// Create random username
 	function randomUsername() {
@@ -136,7 +164,13 @@ socket.on('usersPresent', function(connectedUsers){
 		// console.log(allUsers);
 	});
 	// $('#usersContainer').html(allUsers); // display all users
-})
+});
+
+socket.on('roomsOnline', function(onlineRooms){
+	gameRoomsOnline = onlineRooms;
+	console.log(gameRoomsOnline);
+
+});
 
 // Sending Messages
 $msgForm.on('submit', function(e) {
