@@ -15,6 +15,7 @@ var $messageArea = $('#messagesArea');
 let $username;
 var usersOnline = {}; // equivalent to connectedUsers in serverside
 var gameRoomsOnline = []; // equivalent to onlineRooms in serverside
+var gameRandRoomsOnline = [];
 
 socket.on('connect', function() {
 	// check if cookie is present
@@ -32,7 +33,7 @@ socket.on('connect', function() {
 	// if hascookie == false then generate a username
 	$('input[name=username]').val(randomUsername());
 	let test = randomUsername();
-	$('#uniqueCode').text(test);
+	$('#uniqueCode').text(test); // change this code to be numeric value only so user can't enter 'randomroom#'
 	
 	// potentially also create a room for random ones?
 	socket.emit('createNewRoom',{roomName: test});
@@ -50,7 +51,8 @@ socket.on('connect', function() {
 			room: roomName,
 			// room: 'chatroom', // this can be dynamic to support multiple users
 			color: '#000000', // default nickname color is black
-			cookie: hasCookie
+			cookie: hasCookie,
+			random: false
 		}, function(cbData){
 			if (cbData.roomExists == false){
 				$('#errorMsg').text(cbData.error);
@@ -65,7 +67,9 @@ socket.on('connect', function() {
 
 	$('#randomGame').on('submit', function(e){
 		e.preventDefault();
-		// alert('join random code here');
+		// socket.emit('getRandomRooms')
+		// randomRooms = result of getRandomRomos - socket.on(something called by getRandomRooms)
+		// socket.emit('createRandomRoom',{roomName: '0'});
 		$username = $.trim($loginForm.find('input[name=username]').val());
 		let roomName = $.trim($loginForm.find('input[name=room]').val());
 
@@ -75,7 +79,8 @@ socket.on('connect', function() {
 			room: roomName,
 			// room: 'chatroom', // this can be dynamic to support multiple users
 			color: '#000000', // default nickname color is black
-			cookie: hasCookie
+			cookie: hasCookie,
+			random: true
 		}, function(cbData){
 			if (cbData.roomExists == false){
 				$('#errorMsg').text(cbData.error);
@@ -169,6 +174,12 @@ socket.on('usersPresent', function(connectedUsers){
 socket.on('roomsOnline', function(onlineRooms){
 	gameRoomsOnline = onlineRooms;
 	console.log(gameRoomsOnline);
+
+});
+
+socket.on('randomRoomsOnline', function(randomRooms){
+	gameRandRoomsOnline = randomRooms;
+	console.log(gameRandRoomsOnline);
 
 });
 

@@ -15,6 +15,7 @@ var chance = require('chance').Chance();
 var connectedUsers = {}; // object of all connected user objects
 var chatHistory = [];
 var onlineRooms = [];
+var randomRooms = [];
 
 app.use(express.static('assets'));
 
@@ -40,6 +41,7 @@ io.on('connection', function(socket) {
 			delete connectedUsers[socket.id];
 			io.emit('usersPresent', connectedUsers); // write clientside userlist
 			io.emit('roomsOnline', onlineRooms); // write clientside room list
+			io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
 			// console.log(connectedUsers);
 		}
 	});
@@ -50,6 +52,12 @@ io.on('connection', function(socket) {
 		// console.log(req.roomName);
 		console.log(onlineRooms);
 	});
+
+	// socket.on('createRandomRoom', function(req){
+	// 	randomRooms.push(req.roomName);
+	// 	// console.log(req.roomName);
+	// 	console.log(randomRooms);
+	// });
 
 	socket.on('newUser', function(req, callback) {
 		let nameTaken = false;
@@ -68,50 +76,109 @@ io.on('connection', function(socket) {
 				console.log("name taken, trying new name: " + req.username);
             }
 		});
-
 		
-		// Throw error if room does not exist
-		if(onlineRooms.indexOf(req.room) == -1){
-			console.log(req.room + " room does not exist");
-			callback({
-				roomExists: false,
-				error: 'Invalid game code!'
+		// If random was selected
+		if (req.random == true){
+			console.log("random was selected!");
+			// for this to work - a room with a completed game MUST be deleted on game completion (to prevent joining a finished game)
+
+			if (randomRooms.length === 0){
+				console.log("No random rooms currently exist");
+				randomRooms.push(Math.floor(Math.random() * 101) + "random" + Math.floor(Math.random() * 101) + "room" + Math.floor(Math.random() * 101)); // add a random room
+				// console.log(randomRooms);
+			}
+
+			// check list of random rooms to see if any room has an empty spot (contains one person)
+			let joinedRandRoom = false;
+			// for (i=0; i<randomRooms.length; i++){
+			while (joinedRandRoom == false){
+				for (i=0; i<randomRooms.length; i++){
+					req.room = randomRooms[i]; // set room of user to random room
+					
+					socket.join(randomRooms[i]);
+					console.log(randomRooms);
+					if (io.nsps['/'].adapter.rooms[randomRooms[i]].length > 2){
+						socket.leave(randomRooms[i]); // if room is full then leave room
+					}
+					else{
+						joinedRandRoom = true;
+					}
+				}
+				if (joinedRandRoom == false){ // create a new room when all existing rooms are full
+					randomRooms.push(Math.floor(Math.random() * 101) + "random" + Math.floor(Math.random() * 101) + "room" + Math.floor(Math.random() * 101));
+				}
+				connectedUsers[socket.id] = req;
+				connectedUsers[socket.id].userID = socket.id;
+			}
+			io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
+			io.emit('roomsOnline', onlineRooms); // write clientside room list
+			io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
+			// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
+
+			socket.broadcast.to(req.room).emit('message', {
+				username: 'System',
+				text: req.username + ' has joined!',
+				timestamp: moment().valueOf(),
+				color: '#808080'
 			});
+			callback({
+				roomExists: true
+			});
+			// if yes join that room
+			// else create new random room and wait inside room
+
+			// callback({
+			// 	roomExists: true
+			// });
 		}
-		else{ // otherwise join game
-			// console.log(req.username + " has joined the chatroom");
-			connectedUsers[socket.id] = req;
-			connectedUsers[socket.id].userID = socket.id;
-			console.log(onlineRooms);
-
-			socket.join(req.room);
-			var connectedClients = io.nsps['/'].adapter.rooms[req.room];
-
-			// console.log(connectedClients.length); // number of clients in chatroom
-			if (connectedClients.length >= 3){ // 3 instead of 2 because of delayed execution
+		// Random not selected
+		else if (req.random == false){
+			console.log("join game selected");
+			// Throw error if room does not exist in onlinerooms list
+			if(onlineRooms.indexOf(req.room) == -1){
+				console.log(req.room + " room does not exist");
 				callback({
 					roomExists: false,
-					error: 'The gameroom is already full'
+					error: 'Invalid game code!'
 				});
 			}
-			else{
-				io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
-				io.emit('roomsOnline', onlineRooms); // write clientside room list
-				// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
+			else{ // otherwise join game
+				// console.log(req.username + " has joined the chatroom");
+				connectedUsers[socket.id] = req;
+				connectedUsers[socket.id].userID = socket.id;
+				console.log(onlineRooms);
 
-				socket.broadcast.to(req.room).emit('message', {
-					username: 'System',
-					text: req.username + ' has joined!',
-					timestamp: moment().valueOf(),
-					color: '#808080'
-				});
+				socket.join(req.room);
+				var connectedClients = io.nsps['/'].adapter.rooms[req.room];
 
-				callback({
-					roomExists: true
-				});
+				// Get number of clients in chatroom
+				if (connectedClients.length > 2){ // max 2 ppl a room
+					callback({
+						roomExists: false,
+						error: 'The gameroom is already full'
+					});
+				}
+				else{
+					io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
+					io.emit('roomsOnline', onlineRooms); // write clientside room list
+					io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
+					// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
+
+					socket.broadcast.to(req.room).emit('message', {
+						username: 'System',
+						text: req.username + ' has joined!',
+						timestamp: moment().valueOf(),
+						color: '#808080'
+					});
+
+					callback({
+						roomExists: true
+					});
+				}
+				
 			}
-			
 		}
+	
 	});
 
 	
@@ -161,6 +228,7 @@ io.on('connection', function(socket) {
 					console.log("Name changed to: " + newName);
 					io.emit('usersPresent', connectedUsers);
 					io.emit('roomsOnline', onlineRooms); // write clientside room list
+					io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
 					// console.log(connectedUsers);
 				}
 				else{
@@ -194,6 +262,7 @@ io.on('connection', function(socket) {
 					connectedUsers[socket.id].color = rgbValue;
 					io.emit('usersPresent', connectedUsers);
 					io.emit('roomsOnline', onlineRooms); // write clientside room list
+					io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
 					// console.log(connectedUsers);
 				}
 				else{
