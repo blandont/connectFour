@@ -8,8 +8,7 @@
  */
 
 const socket = io();
-var $loginForm = $('#login-form');
-var $loginArea = $('#login-area');
+var $joinGame = $('#joinForm');
 var $msgForm = $('#messageForm');
 var $messageArea = $('#messagesArea');
 let $username;
@@ -18,8 +17,11 @@ var gameRoomsOnline = []; // equivalent to onlineRooms in serverside
 var gameRandRoomsOnline = [];
 
 socket.on('connect', function() {
+	
+	// hide the game initially
+	$('.messenger').hide();
+	
 	// check if cookie is present
-	// cookie check
 	let fillerName = 'newUserName';
 	let hasCookie = false;
 	if (document.cookie.split(';').filter((item) => item.trim().startsWith('username=')).length) {
@@ -29,27 +31,26 @@ socket.on('connect', function() {
 		hasCookie = true;
 	}
 
-	$('.messenger').hide();
-	// if hascookie == false then generate a username
-	$('input[name=username]').val(randomUsername());
-	let test = randomUsername();
-	$('#uniqueCode').text(test); // change this code to be numeric value only so user can't enter 'randomroom#'
-	
-	// potentially also create a room for random ones?
-	socket.emit('createNewRoom',{roomName: test});
-	// socket.emit('createNewRoomRandomGames',{roomName: test});
+ 	$('input[name=username]').val(fillerName);
+	if (hasCookie == false){
+		$('input[name=username]').val(randomUsername());
+	}
 
-	$loginForm.on('submit', function(e) {
+	// Generate uniquecode for sharing with friend
+	let uniquecode = "" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 93) + "" + Math.floor(Math.random() * 61);
+	$('#uniqueCode').text(uniquecode); // change this code to be numeric value only so user can't enter 'randomroom#'
+	socket.emit('createNewRoom',{roomName: uniquecode}); // create room with unique code server side
+
+	// Onclick for join game
+	$joinGame.on('submit', function(e) {
 		e.preventDefault();
 
-		$username = $.trim($loginForm.find('input[name=username]').val());
-		let roomName = $.trim($loginForm.find('input[name=room]').val());
+		$username = $.trim($joinGame.find('input[name=username]').val());
+		let roomName = $.trim($joinGame.find('input[name=room]').val());
 
-		// let tester = Math.floor((Math.random() * 3) + 1); // between 1 and 3
 		socket.emit('newUser', {
 			username: $username, // fillerName,
 			room: roomName,
-			// room: 'chatroom', // this can be dynamic to support multiple users
 			color: '#000000', // default nickname color is black
 			cookie: hasCookie,
 			random: false
@@ -67,17 +68,11 @@ socket.on('connect', function() {
 
 	$('#randomGame').on('submit', function(e){
 		e.preventDefault();
-		// socket.emit('getRandomRooms')
-		// randomRooms = result of getRandomRomos - socket.on(something called by getRandomRooms)
-		// socket.emit('createRandomRoom',{roomName: '0'});
-		$username = $.trim($loginForm.find('input[name=username]').val());
-		let roomName = $.trim($loginForm.find('input[name=room]').val());
+		$username = $.trim($joinGame.find('input[name=username]').val());
 
-		// let tester = Math.floor((Math.random() * 3) + 1); // between 1 and 3
 		socket.emit('newUser', {
 			username: $username, // fillerName,
-			room: roomName,
-			// room: 'chatroom', // this can be dynamic to support multiple users
+			room: 'fillerValue',
 			color: '#000000', // default nickname color is black
 			cookie: hasCookie,
 			random: true
@@ -111,9 +106,6 @@ socket.on('connect', function() {
 
 socket.on('message', function(message) {
 	let momentTimestamp = moment.utc(message.timestamp);
-	// console.log("on message: " + socket.id);
-	// console.log(usersOnline);
-	// console.log("username color is: " + message.color);
 	let $message = $('#messagesArea');
 
 	// If Message is a system message
@@ -171,12 +163,14 @@ socket.on('usersPresent', function(connectedUsers){
 	// $('#usersContainer').html(allUsers); // display all users
 });
 
+// not used yet
 socket.on('roomsOnline', function(onlineRooms){
 	gameRoomsOnline = onlineRooms;
 	console.log(gameRoomsOnline);
 
 });
 
+// not used yet
 socket.on('randomRoomsOnline', function(randomRooms){
 	gameRandRoomsOnline = randomRooms;
 	console.log(gameRandRoomsOnline);

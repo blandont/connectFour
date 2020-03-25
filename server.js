@@ -53,29 +53,23 @@ io.on('connection', function(socket) {
 		console.log(onlineRooms);
 	});
 
-	// socket.on('createRandomRoom', function(req){
-	// 	randomRooms.push(req.roomName);
-	// 	// console.log(req.roomName);
-	// 	console.log(randomRooms);
-	// });
-
 	socket.on('newUser', function(req, callback) {
-		let nameTaken = false;
+		// let nameTaken = false;
 		// req.username = chance.animal();
-		if (req.cookie == false){
-			req.username = chance.animal(); // generate new name if no cookie
-		}
+		// if (req.cookie == false){
+		// 	req.username = chance.animal(); // generate new name if no cookie
+		// }
         // connectedUsers.push(socket.id);
         // connectedUsers[socket.id]['username'] = newUserName;
         // console.log(connectedUsers);
 		
-		// generate another name if taken
-		Object.keys(connectedUsers).forEach(function(socketID) {
-			while (connectedUsers[socketID].username.toLowerCase() === req.username.toLowerCase()) {
-				req.username = chance.animal();
-				console.log("name taken, trying new name: " + req.username);
-            }
-		});
+		// generate another name if taken - for connect 4 duplicate name is okay
+		// Object.keys(connectedUsers).forEach(function(socketID) {
+		// 	while (connectedUsers[socketID].username.toLowerCase() === req.username.toLowerCase()) {
+		// 		req.username = chance.animal();
+		// 		console.log("name taken, trying new name: " + req.username);
+        //     }
+		// });
 		
 		// If random was selected
 		if (req.random == true){
@@ -84,7 +78,7 @@ io.on('connection', function(socket) {
 
 			if (randomRooms.length === 0){
 				console.log("No random rooms currently exist");
-				randomRooms.push(Math.floor(Math.random() * 101) + "random" + Math.floor(Math.random() * 101) + "room" + Math.floor(Math.random() * 101)); // add a random room
+				randomRooms.push("randomroom" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101)); // add a random room
 				// console.log(randomRooms);
 			}
 
@@ -105,7 +99,7 @@ io.on('connection', function(socket) {
 					}
 				}
 				if (joinedRandRoom == false){ // create a new room when all existing rooms are full
-					randomRooms.push(Math.floor(Math.random() * 101) + "random" + Math.floor(Math.random() * 101) + "room" + Math.floor(Math.random() * 101));
+					randomRooms.push("randomroom" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101));
 				}
 				connectedUsers[socket.id] = req;
 				connectedUsers[socket.id].userID = socket.id;
@@ -124,14 +118,9 @@ io.on('connection', function(socket) {
 			callback({
 				roomExists: true
 			});
-			// if yes join that room
-			// else create new random room and wait inside room
-
-			// callback({
-			// 	roomExists: true
-			// });
 		}
-		// Random not selected
+
+		// Random not selected (join game selected)
 		else if (req.random == false){
 			console.log("join game selected");
 			// Throw error if room does not exist in onlinerooms list
