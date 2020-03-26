@@ -16,6 +16,14 @@ var usersOnline = {}; // equivalent to connectedUsers in serverside
 var gameRoomsOnline = []; // equivalent to onlineRooms in serverside
 var gameRandRoomsOnline = [];
 var playerAssignment = '';
+var gameBoard = [
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0']
+];
 
 socket.on('connect', function() {
 	
@@ -177,15 +185,18 @@ $('body').on('click', 'td', function(){
 		else {
 			// console.log(socket.id);
 			// console.log(usersOnline[socket.id].username);
-			// boardState = $('#gameBoard').html();
 			// console.log(boardState);
+			let rowMove = enteredMove.split('-')[0];
+			let colMove = enteredMove.split('-')[1];
+			gameBoard[rowMove][colMove] = playerAssignment;
 
 			socket.emit('validMove', {
 				playerID: socket.id,
 				moveLocation: enteredMove,
 				// turnIdentifier: playerAssignment, // would this be needed?
-				player: playerAssignment // Whether player is X or Y
-				// gameBoard: 'boardState'
+				player: playerAssignment, // Whether player is X or Y
+				boardState: gameBoard // pass the game board to client
+				// server does not need to send gameboard back because we prevent client from placing on an existing tile - this could result in major bugs if client manipulates DOM
 			});
 		}
 	}
@@ -216,10 +227,13 @@ socket.on('validMove', function(validmove) {
 
 socket.on('gameOver', function(winner){
 	if (winner == playerAssignment){
-		alert("Winner Winner Chicken Dinner");
+		alert("Winner Winner Chicken Dinner\nReload page to return to welcome screen");
+	}
+	else if(winner == 'draw'){
+		alert("It's a Draw!\nReload page to return to welcome screen")
 	}
 	else{
-		alert("Sucks to suck...");
+		alert("Sucks to suck...\nReload page to return to welcome screen");
 	}
 	// location.reload();
 });

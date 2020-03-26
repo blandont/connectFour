@@ -3,6 +3,8 @@
 // Server side code
 /**
  * 
+ * TODO: the gameboard should be a unique gameboard per room - right now it is a global space gameboard across all rooms
+ * 
  */
 
 var express = require('express');
@@ -16,14 +18,6 @@ var connectedUsers = {}; // object of all connected user objects
 var chatHistory = [];
 var onlineRooms = [];
 var randomRooms = [];
-var gameBoard = [
-	['0','0','0','0','0','0','0'],
-	['0','0','0','0','0','0','0'],
-	['0','0','0','0','0','0','0'],
-	['0','0','0','0','0','0','0'],
-	['0','0','0','0','0','0','0'],
-	['0','0','0','0','0','0','0']
-];
 
 app.use(express.static('assets'));
 
@@ -58,7 +52,7 @@ io.on('connection', function(socket) {
 	socket.on('createNewRoom', function(req){
 		onlineRooms.push(req.roomName);
 		// console.log(req.roomName);
-		console.log(onlineRooms);
+		// console.log(onlineRooms);
 	});
 
 	socket.on('newUser', function(req, callback) {
@@ -81,11 +75,11 @@ io.on('connection', function(socket) {
 		
 		// If random was selected
 		if (req.random == true){
-			console.log("random was selected!");
+			// console.log("random was selected!");
 			// for this to work - a room with a completed game MUST be deleted on game completion (to prevent joining a finished game)
 
 			if (randomRooms.length === 0){
-				console.log("No random rooms currently exist");
+				// console.log("No random rooms currently exist");
 				randomRooms.push("randomroom" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101)); // add a random room
 				// console.log(randomRooms);
 			}
@@ -98,7 +92,7 @@ io.on('connection', function(socket) {
 					req.room = randomRooms[i]; // set room of user to random room
 					
 					socket.join(randomRooms[i]);
-					console.log(randomRooms);
+					// console.log(randomRooms);
 					if (io.nsps['/'].adapter.rooms[randomRooms[i]].length > 2){
 						socket.leave(randomRooms[i]); // if room is full then leave room
 					}
@@ -313,24 +307,10 @@ io.on('connection', function(socket) {
 		// Trigger socket.on(validMove) on clientside
 		// console.log(connectedUsers[socket.id].room);
 		io.to(connectedUsers[socket.id].room).emit('validMove', validmove); // emit data of validmove
-
+		// console.log(connectedUsers);
 		let gameState;
 
-		// gameState = checkGameState(gameBoard);
-		// if ((gameState == 'X') || (gameState == 'Y')){
-		// 	// socket.emit('gameOver', gameState);
-		// 	io.to(connectedUsers[socket.id].room).emit('gameOver', gameState);
-		// 	// console.log('winner winner chicken dinner');
-		// }
-
-		let playerMove = validmove.moveLocation; // id (row-col etc.)
-		let playerType = validmove.player;	// X or Y
-
-		let rowMove = playerMove.split('-')[0];
-		let colMove = playerMove.split('-')[1];
-
-		// Store user moves in board state
-		gameBoard[rowMove][colMove] = playerType;
+		gameBoard = validmove.boardState; // game board is passed by the client
 		// console.log(gameBoard);
 
 		gameState = checkGameState(gameBoard);
@@ -339,6 +319,11 @@ io.on('connection', function(socket) {
 			// io.to(connectedUsers[socket.id].room).emit('gameOver', gameState);
 			io.in(connectedUsers[socket.id].room).emit('gameOver', gameState);
 			// console.log('winner winner chicken dinner');
+		} 
+		// Draw if all of top row is filled out
+		else if(gameBoard[0][0] && gameBoard[0][1] && gameBoard[0][2] && gameBoard[0][3] && gameBoard[0][4] && gameBoard[0][5] && gameBoard[0][6] != '0'){
+			// console.log("its a bonafide tie!");
+			io.in(connectedUsers[socket.id].room).emit('gameOver', 'draw');
 		}
 		
 		function checkLine(a,b,c,d) {
