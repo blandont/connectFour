@@ -15,6 +15,7 @@ let $username;
 var usersOnline = {}; // equivalent to connectedUsers in serverside
 var gameRoomsOnline = []; // equivalent to onlineRooms in serverside
 var gameRandRoomsOnline = [];
+var playerAssignment = '';
 
 socket.on('connect', function() {
 	
@@ -104,6 +105,125 @@ socket.on('connect', function() {
 	}
 });
 
+socket.on('usersPresent', function(connectedUsers){
+	usersOnline = connectedUsers;
+	// $username = usersOnline[socket.id].username;
+	document.cookie = "username=" + $username; //set cookie in case of nickname change
+	// console.log(document.cookie);
+	$(".roomTitle").text('Welcome to the chatroom, ' + $username + '!'); // change name display at top
+
+	let allUsers = "";
+	Object.keys(connectedUsers).forEach(function(socketID){
+		// console.log(connectedUsers[socketID].username); // get all usernames present in chatroom
+		allUsers += "<div class='userDisplay'><span style='color: "+ connectedUsers[socketID].color +";'><strong>" + connectedUsers[socketID].username + "</strong></span></div>"; // change color of name in online list as well
+		// console.log(allUsers);
+	});
+	// $('#usersContainer').html(allUsers); // display all users
+});
+
+// not used yet
+socket.on('roomsOnline', function(onlineRooms){
+	gameRoomsOnline = onlineRooms;
+	// console.log(gameRoomsOnline);
+
+});
+
+// not used yet
+socket.on('randomRoomsOnline', function(randomRooms){
+	gameRandRoomsOnline = randomRooms;
+	// console.log(gameRandRoomsOnline);
+
+});
+
+socket.on('assignment', function(assignmentType){
+	playerAssignment = assignmentType.value;
+	console.log(playerAssignment);
+});
+
+// Sending Messages
+$msgForm.on('submit', function(e) {
+	e.preventDefault(); // prevent default form reload
+	let $message = $('#messageInput');
+	let invalidInput = /<(.|\n)*?>/g;
+	if (invalidInput.test($message.val())) {
+		alert('html tags are not allowed');
+    }
+    else {
+		// console.log(socket.id);
+		// console.log(usersOnline[socket.id].username);
+		socket.emit('message', {
+			username: $username.trim(),
+			text: $message.val(),
+			color: usersOnline[socket.id].color,
+			userID: socket.id
+		});
+	}
+	$message.val('');
+});
+
+// Onclicks for cells (td and getting id)
+$('body').on('click', 'td', function(){
+	// console.log($(this));
+	let enteredMove = this.id;
+	// console.log(enteredMove); // get ID of clicked element (1-0, 2-4 etc)
+	// let boardState = "";
+
+	// should change to check if top piece of column is filled - clicking on a piece in unfilled column should just stack on top
+	let myTurn = true; // TODO: still need to implement turn waiting
+	if (myTurn == true){
+		if (($('#' + enteredMove).hasClass('xPiece')) || ($('#' + enteredMove).hasClass('yPiece'))) {
+			alert('a game piece cannot be placed here');
+		}
+		else {
+			// console.log(socket.id);
+			// console.log(usersOnline[socket.id].username);
+			// boardState = $('#gameBoard').html();
+			// console.log(boardState);
+
+			socket.emit('validMove', {
+				playerID: socket.id,
+				moveLocation: enteredMove,
+				// turnIdentifier: playerAssignment, // would this be needed?
+				player: playerAssignment // Whether player is X or Y
+				// gameBoard: 'boardState'
+			});
+		}
+	}
+	else{
+		alert('Not your turn');
+	}
+});
+
+socket.on('validMove', function(validmove) {
+	// console.log('validmove');
+
+	// let momentTimestamp = moment.utc(message.timestamp);
+	// let $message = $('#messagesArea');
+	let playerMove = validmove.moveLocation;
+	let moveOwner = validmove.player;
+	let gamepiece = '';
+	
+	// 
+	if (moveOwner == 'X'){
+		gamepiece = 'xPiece';
+	}
+	else{
+		gamepiece = 'yPiece';
+	}
+	$('#' + playerMove).addClass(gamepiece);
+
+});
+
+socket.on('gameOver', function(winner){
+	if (winner == playerAssignment){
+		alert("Winner Winner Chicken Dinner");
+	}
+	else{
+		alert("Sucks to suck...");
+	}
+	// location.reload();
+});
+
 socket.on('message', function(message) {
 	let momentTimestamp = moment.utc(message.timestamp);
 	let $message = $('#messagesArea');
@@ -146,55 +266,3 @@ socket.on('message', function(message) {
 		}, 450);
 	}
 });
-
-socket.on('usersPresent', function(connectedUsers){
-	usersOnline = connectedUsers;
-	$username = usersOnline[socket.id].username;
-	document.cookie = "username=" + $username; //set cookie in case of nickname change
-	// console.log(document.cookie);
-	$(".roomTitle").text('Welcome to the chatroom, ' + $username + '!'); // change name display at top
-
-	let allUsers = "";
-	Object.keys(connectedUsers).forEach(function(socketID){
-		// console.log(connectedUsers[socketID].username); // get all usernames present in chatroom
-		allUsers += "<div class='userDisplay'><span style='color: "+ connectedUsers[socketID].color +";'><strong>" + connectedUsers[socketID].username + "</strong></span></div>"; // change color of name in online list as well
-		// console.log(allUsers);
-	});
-	// $('#usersContainer').html(allUsers); // display all users
-});
-
-// not used yet
-socket.on('roomsOnline', function(onlineRooms){
-	gameRoomsOnline = onlineRooms;
-	console.log(gameRoomsOnline);
-
-});
-
-// not used yet
-socket.on('randomRoomsOnline', function(randomRooms){
-	gameRandRoomsOnline = randomRooms;
-	console.log(gameRandRoomsOnline);
-
-});
-
-// Sending Messages
-$msgForm.on('submit', function(e) {
-	e.preventDefault(); // prevent default form reload
-	let $message = $('#messageInput');
-	let invalidInput = /<(.|\n)*?>/g;
-	if (invalidInput.test($message.val())) {
-		alert('html tags are not allowed');
-    }
-    else {
-		// console.log(socket.id);
-		// console.log(usersOnline[socket.id].username);
-		socket.emit('message', {
-			username: $username.trim(),
-			text: $message.val(),
-			color: usersOnline[socket.id].color,
-			userID: socket.id
-		});
-	}
-	$message.val('');
-});
-

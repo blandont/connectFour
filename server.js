@@ -16,6 +16,14 @@ var connectedUsers = {}; // object of all connected user objects
 var chatHistory = [];
 var onlineRooms = [];
 var randomRooms = [];
+var gameBoard = [
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0'],
+	['0','0','0','0','0','0','0']
+];
 
 app.use(express.static('assets'));
 
@@ -96,6 +104,16 @@ io.on('connection', function(socket) {
 					}
 					else{
 						joinedRandRoom = true;
+						if (io.nsps['/'].adapter.rooms[randomRooms[i]].length > 1){ // if 1 person already in room
+							socket.emit('assignment', {
+								value: 'Y'
+							});
+						}
+						else{
+							socket.emit('assignment', {
+								value: 'X'
+							});
+						}
 					}
 				}
 				if (joinedRandRoom == false){ // create a new room when all existing rooms are full
@@ -152,6 +170,17 @@ io.on('connection', function(socket) {
 					io.emit('roomsOnline', onlineRooms); // write clientside room list
 					io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
 					// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
+
+					if (connectedClients.length > 1){ // if 1 person already in room
+						socket.emit('assignment', {
+							value: 'Y'
+						});
+					}
+					else{
+						socket.emit('assignment', {
+							value: 'X'
+						});
+					}
 
 					socket.broadcast.to(req.room).emit('message', {
 						username: 'System',
@@ -276,6 +305,90 @@ io.on('connection', function(socket) {
 				color: '#808080'
 			});
 		}
+	});
+
+	socket.on('validMove', function(validmove) {
+		// console.log('valid move was made');
+
+		// Trigger socket.on(validMove) on clientside
+		// console.log(connectedUsers[socket.id].room);
+		io.to(connectedUsers[socket.id].room).emit('validMove', validmove); // emit data of validmove
+
+		let gameState;
+
+		// gameState = checkGameState(gameBoard);
+		// if ((gameState == 'X') || (gameState == 'Y')){
+		// 	// socket.emit('gameOver', gameState);
+		// 	io.to(connectedUsers[socket.id].room).emit('gameOver', gameState);
+		// 	// console.log('winner winner chicken dinner');
+		// }
+
+		let playerMove = validmove.moveLocation; // id (row-col etc.)
+		let playerType = validmove.player;	// X or Y
+
+		let rowMove = playerMove.split('-')[0];
+		let colMove = playerMove.split('-')[1];
+
+		// Store user moves in board state
+		gameBoard[rowMove][colMove] = playerType;
+		// console.log(gameBoard);
+
+		gameState = checkGameState(gameBoard);
+		if ((gameState == 'X') || (gameState == 'Y')){
+			// socket.emit('gameOver', gameState);
+			// io.to(connectedUsers[socket.id].room).emit('gameOver', gameState);
+			io.in(connectedUsers[socket.id].room).emit('gameOver', gameState);
+			// console.log('winner winner chicken dinner');
+		}
+		
+		function checkLine(a,b,c,d) {
+			// Check first cell non-zero and all cells match
+			return ((a != '0') && (a == b) && (a == c) && (a == d));
+		}
+		function checkGameState(gameBoard){
+			// Check down
+			for (r = 0; r < 3; r++)
+				for (c = 0; c < 7; c++)
+					if (checkLine(gameBoard[r][c], gameBoard[r+1][c], gameBoard[r+2][c], gameBoard[r+3][c]))
+						return gameBoard[r][c];
+
+			// Check right
+			for (r = 0; r < 6; r++)
+				for (c = 0; c < 4; c++)
+					if (checkLine(gameBoard[r][c], gameBoard[r][c+1], gameBoard[r][c+2], gameBoard[r][c+3]))
+						return gameBoard[r][c];
+
+			// Check down-right
+			for (r = 0; r < 3; r++)
+				for (c = 0; c < 4; c++)
+					if (checkLine(gameBoard[r][c], gameBoard[r+1][c+1], gameBoard[r+2][c+2], gameBoard[r+3][c+3]))
+						return gameBoard[r][c];
+
+			// Check down-left
+			for (r = 3; r < 6; r++)
+				for (c = 0; c < 4; c++)
+					if (checkLine(gameBoard[r][c], gameBoard[r-1][c+1], gameBoard[r-2][c+2], gameBoard[r-3][c+3]))
+						return gameBoard[r][c];
+
+			return 'No Winner';
+		}
+
+		// Check game state
+		// if (fourConnected){
+		// 	// console.log("Invalid / command");
+		// 	socket.emit('gameOver', {
+		// 		username: 'System',
+		// 		text: 'Invalid slash command or invalid format',
+		// 		timestamp: moment().valueOf(),
+		// 		color: '#808080'
+		// 	});
+		// }
+		// else{
+		// 	socket.emit('changeTurn'{
+		// 		player: 'someplayer',
+		// 		turn: true // or false
+		// 	})
+		// }
 
 	});
 });
