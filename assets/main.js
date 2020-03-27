@@ -245,7 +245,7 @@ $('body').on('click', 'td', function(){
 			}
 
 			// Write move into board
-			console.log(rowMove);
+			// console.log(rowMove);
 			enteredMove = "" + rowMove + "-" + colMove;
 			gameBoard[rowMove][colMove] = playerAssignment;
 
