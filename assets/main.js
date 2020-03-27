@@ -24,6 +24,7 @@ var gameBoard = [
 	['0','0','0','0','0','0','0'],
 	['0','0','0','0','0','0','0']
 ];
+var myTurn = true;
 
 socket.on('connect', function() {
 	
@@ -119,7 +120,7 @@ socket.on('usersPresent', function(connectedUsers){
 	document.cookie = "username=" + $username; //set cookie in case of nickname change
 	// console.log(document.cookie);
 	$(".roomTitle").text('Welcome to the chatroom, ' + $username + '!'); // change name display at top
-
+	
 	let allUsers = "";
 	Object.keys(connectedUsers).forEach(function(socketID){
 		// console.log(connectedUsers[socketID].username); // get all usernames present in chatroom
@@ -145,8 +146,16 @@ socket.on('randomRoomsOnline', function(randomRooms){
 
 socket.on('assignment', function(assignmentType){
 	playerAssignment = assignmentType.value;
+	if (playerAssignment == 'Y'){
+		myTurn = false;
+	}
 	console.log(playerAssignment);
 });
+
+socket.on('turnChange', function(){
+	myTurn = !myTurn;
+	console.log(myTurn);
+})
 
 // Sending Messages
 $msgForm.on('submit', function(e) {
@@ -177,7 +186,8 @@ $('body').on('click', 'td', function(){
 	// let boardState = "";
 
 	// should change to check if top piece of column is filled - clicking on a piece in unfilled column should just stack on top
-	let myTurn = true; // TODO: still need to implement turn waiting
+	// myTurn = true; // TODO: still need to implement turn waiting
+	
 	if (myTurn == true){
 		if (($('#' + enteredMove).hasClass('xPiece')) || ($('#' + enteredMove).hasClass('yPiece'))) {
 			alert('a game piece cannot be placed here');

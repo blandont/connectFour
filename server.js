@@ -165,6 +165,10 @@ io.on('connection', function(socket) {
 					io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
 					// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
 
+					// if (connectedUsers.length == 1){
+					// 	io.in(connectedUsers[socket.id].room).emit('gameOver', 'draw');
+					// }
+					
 					if (connectedClients.length > 1){ // if 1 person already in room
 						socket.emit('assignment', {
 							value: 'Y'
@@ -303,6 +307,11 @@ io.on('connection', function(socket) {
 
 	socket.on('validMove', function(validmove) {
 		// console.log('valid move was made');
+		// console.log(connectedUsers[socket.id].room);
+		// console.log(test[1]);
+		// if (io.nsps['/'].adapter.rooms[connectedUsers[socket.id].room].length == 1){ // if 1 person in room don't allow play
+			
+		// }
 
 		// Trigger socket.on(validMove) on clientside
 		// console.log(connectedUsers[socket.id].room);
@@ -325,6 +334,8 @@ io.on('connection', function(socket) {
 			// console.log("its a bonafide tie!");
 			io.in(connectedUsers[socket.id].room).emit('gameOver', 'draw');
 		}
+		// Change turn priority for both players
+		io.in(connectedUsers[socket.id].room).emit('turnChange');
 		
 		function checkLine(a,b,c,d) {
 			// Check first cell non-zero and all cells match
