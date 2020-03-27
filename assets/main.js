@@ -30,6 +30,7 @@ socket.on('connect', function() {
 	
 	// hide the game initially
 	$('.messenger').hide();
+	// $('#waitModal').hide();
 	
 	// check if cookie is present
 	let fillerName = 'newUserName';
@@ -157,6 +158,22 @@ socket.on('turnChange', function(){
 	console.log(myTurn);
 })
 
+socket.on('gameWaiting', function(status){
+	console.log('gamewaiting triggered');
+	if (status == true){
+		// display waiting for player modal
+		// hide game table
+		$('#gameBoard').hide();
+		$('#waitModal').show();
+	}
+	else{
+		// hide waiting modal
+		// show game table
+		$('#gameBoard').show();
+		$('#waitModal').hide();
+	}
+})
+
 // Sending Messages
 $msgForm.on('submit', function(e) {
 	e.preventDefault(); // prevent default form reload
@@ -183,10 +200,8 @@ $('body').on('click', 'td', function(){
 	// console.log($(this));
 	let enteredMove = this.id;
 	// console.log(enteredMove); // get ID of clicked element (1-0, 2-4 etc)
-	// let boardState = "";
-
+	
 	// should change to check if top piece of column is filled - clicking on a piece in unfilled column should just stack on top
-	// myTurn = true; // TODO: still need to implement turn waiting
 	
 	if (myTurn == true){
 		if (($('#' + enteredMove).hasClass('xPiece')) || ($('#' + enteredMove).hasClass('yPiece'))) {
@@ -195,7 +210,6 @@ $('body').on('click', 'td', function(){
 		else {
 			// console.log(socket.id);
 			// console.log(usersOnline[socket.id].username);
-			// console.log(boardState);
 			let rowMove = enteredMove.split('-')[0];
 			let colMove = enteredMove.split('-')[1];
 			gameBoard[rowMove][colMove] = playerAssignment;

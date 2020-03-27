@@ -102,11 +102,13 @@ io.on('connection', function(socket) {
 							socket.emit('assignment', {
 								value: 'Y'
 							});
+							io.in(randomRooms[i]).emit('gameWaiting', false);
 						}
-						else{
+						else{ // room has 2 people now
 							socket.emit('assignment', {
 								value: 'X'
 							});
+							io.in(randomRooms[i]).emit('gameWaiting', true);
 						}
 					}
 				}
@@ -165,9 +167,13 @@ io.on('connection', function(socket) {
 					io.emit('randomRoomsOnline', randomRooms); // write clientside randomroom list
 					// io.to(`${socket.id}`).emit('showChatLog', chatHistory); // emit only to new joinee
 
-					// if (connectedUsers.length == 1){
-					// 	io.in(connectedUsers[socket.id].room).emit('gameOver', 'draw');
-					// }
+					// While only one player in room wait before starting game
+					if (connectedClients.length == 1){
+						io.in(connectedUsers[socket.id].room).emit('gameWaiting', true);
+					}
+					else if (connectedClients.length == 2){
+						io.in(connectedUsers[socket.id].room).emit('gameWaiting', false);
+					}
 					
 					if (connectedClients.length > 1){ // if 1 person already in room
 						socket.emit('assignment', {
