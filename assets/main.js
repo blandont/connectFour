@@ -155,7 +155,7 @@ socket.on('assignment', function(assignmentType){
 
 socket.on('turnChange', function(){
 	myTurn = !myTurn;
-	console.log(myTurn);
+	// console.log(myTurn);
 })
 
 socket.on('gameWaiting', function(status){
@@ -216,30 +216,34 @@ $('body').on('click', 'td', function(){
 			colMove = parseInt(colMove);
 			// console.log(rowMove);
 
-			// TODO: dropping algorithm
-			// check if all rows underneath are empty - keep dropping until not empty or is row 5
+			// Dropping Algorithm for 'gravity' - check if all rows underneath are empty - keep dropping until not empty or is row 5
 			if (rowMove < 5){
 				// console.log(test);
 				let pieceBelow = gameBoard[rowMove + 1][colMove]; //pieceBelow is one piece below proposed move
 				// console.log(pieceBelow);
 				let rowBelow = rowMove + 1;
-				while (pieceBelow == '0'){
+				while ((pieceBelow == '0') && !$('#' + rowBelow + "-" + colMove).hasClass('xPiece') && !$('#' + rowBelow + "-" + colMove).hasClass('yPiece')){
 				// while (!$('#' + rowBelow + "-" + colMove).hasClass('xPiece') && !$('#' + rowBelow + "-" + colMove).hasClass('yPiece')){
 					rowMove++; // rowmove 'drops' while piece below is empty
 					if (rowMove < 5){
 						pieceBelow = gameBoard[rowMove+1][colMove];
 						// check if has class of of pieceBelow (to check for both X and Y pieces not just piece of own colour)
 						rowBelow = rowMove + 1;
-						if ($('#' + rowBelow + "-" + colMove).hasClass('xPiece') || $('#' + rowBelow + "-" + colMove).hasClass('yPiece')){
+						if ($('#' + rowBelow + "-" + colMove).hasClass('xPiece')){
 							pieceBelow = '-1';
+							// console.log('x below');
+						}
+						if ($('#' + rowBelow + "-" + colMove).hasClass('yPiece')){
+							pieceBelow = '-1';
+							// console.log('y below');
 						}
 					}
 					else{
 						pieceBelow = '-1';
 					}
-					//else we have hit bottom of column
 				}
 			}
+
 			// Write move into board
 			console.log(rowMove);
 			enteredMove = "" + rowMove + "-" + colMove;
