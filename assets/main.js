@@ -36,11 +36,13 @@ socket.on('connect', function() {
 	
 	// check if cookie is present
 	let fillerName = 'newUserName';
+	// let themeType = 'choice1';
 	let hasCookie = false;
 	if (document.cookie.split(';').filter((item) => item.trim().startsWith('username=')).length) {
 		// console.log('The cookie "username" exists')
 		fillerName = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 		// console.log(fillerName);
+		// themeType = document.cookie.replace(/(?:(?:^|.*;\s*)themechoice\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 		hasCookie = true;
 	}
 
@@ -133,6 +135,7 @@ socket.on('usersPresent', function(connectedUsers){
 	// $('#usersContainer').html(allUsers); // display all users
 });
 
+// On receiving names of users in room find opponents and set in title
 socket.on('opponentName', function(foeName){
 	if (foeName != $username){
 		$opponent = foeName;
@@ -156,6 +159,7 @@ socket.on('randomRoomsOnline', function(randomRooms){
 
 });
 
+// Set player as X or Y to determine play order
 socket.on('assignment', function(assignmentType){
 	playerAssignment = assignmentType.value;
 	$(".turnMessage").text("Your move first!");
@@ -166,6 +170,7 @@ socket.on('assignment', function(assignmentType){
 	// console.log(playerAssignment);
 });
 
+// Change turn priority
 socket.on('turnChange', function(){
 	myTurn = !myTurn;
 	if (myTurn){
@@ -177,6 +182,7 @@ socket.on('turnChange', function(){
 	// console.log(myTurn);
 })
 
+// Wait until two players are present
 socket.on('gameWaiting', function(status){
 	console.log('gamewaiting triggered');
 	if (status == true){
@@ -193,28 +199,7 @@ socket.on('gameWaiting', function(status){
 	}
 })
 
-// Sending Messages
-$msgForm.on('submit', function(e) {
-	e.preventDefault(); // prevent default form reload
-	let $message = $('#messageInput');
-	let invalidInput = /<(.|\n)*?>/g;
-	if (invalidInput.test($message.val())) {
-		alert('html tags are not allowed');
-    }
-    else {
-		// console.log(socket.id);
-		// console.log(usersOnline[socket.id].username);
-		socket.emit('message', {
-			username: $username.trim(),
-			text: $message.val(),
-			color: usersOnline[socket.id].color,
-			userID: socket.id
-		});
-	}
-	$message.val('');
-});
-
-// Onclicks for cells (td and getting id)
+// Onclicks for cells (td and getting id) for game move decisions
 $('body').on('click', 'td', function(){
 	// console.log($(this));
 	let enteredMove = this.id;
@@ -285,11 +270,10 @@ $('body').on('click', 'td', function(){
 
 });
 
+// On valid move, change class of gamepiece
 socket.on('validMove', function(validmove) {
 	// console.log('validmove');
 
-	// let momentTimestamp = moment.utc(message.timestamp);
-	// let $message = $('#messagesArea');
 	let playerMove = validmove.moveLocation;
 	let moveOwner = validmove.player;
 	let gamepiece = '';
@@ -305,6 +289,7 @@ socket.on('validMove', function(validmove) {
 
 });
 
+// Determining state of game ending
 socket.on('gameOver', function(winner){
 	if (winner == playerAssignment){
 		alert("Winner Winner Chicken Dinner\nReload page to return to welcome screen");
@@ -316,47 +301,4 @@ socket.on('gameOver', function(winner){
 		alert("Sucks to suck...\nReload page to return to welcome screen");
 	}
 	// location.reload();
-});
-
-socket.on('message', function(message) {
-	let momentTimestamp = moment.utc(message.timestamp);
-	let $message = $('#messagesArea');
-
-	// If Message is a system message
-	if ((message.userID === undefined) &&(message.username.toLowerCase() == 'system')){
-		$message.append('<div class="sysMsg"><div><span>' + message.username + ' </span><span>' + momentTimestamp.local().format('h:mma') +'</span></div>' +
-						'<div>' + message.text + '</div></div>');
-	}
-	// Message is sent by own client 
-	else if (message.userID == socket.id){
-		$message.append('<div class="msg right-msg"><div class="msgBubble">' +
-							'<div class="msgInfo">' +
-								'<div class="msgInfo-name" style="color: '+ message.color +' !important;">' + message.username + '</div>' +
-								'<div class="msgInfo-time">' + momentTimestamp.local().format('h:mma') + '</div>' +
-							'</div>' +
-							'<div class="msg-text">' +
-								message.text +
-							'</div>' +
-						'</div></div>');
-	}
-	// If message comes from other user
-	else {
-		$message.append('<div class="msg left-msg"><div class="msgBubble">' +
-							'<div class="msgInfo">' +
-								'<div class="msgInfo-name" style="color: '+ message.color +' !important;">' + message.username + '</div>' +
-								'<div class="msgInfo-time">' + momentTimestamp.local().format('h:mma') + '</div>' +
-							'</div>' +
-							'<div class="msg-text">' +
-								message.text +
-							'</div>' +
-						'</div></div>');
-	}
-	scrollToBottom('messagesArea');
-
-	function scrollToBottom(id) {
-		let section = document.getElementById(id);
-		$('#' + id).animate({
-			scrollTop: section.scrollHeight - section.clientHeight
-		}, 450);
-	}
 });
