@@ -25,6 +25,7 @@ var gameBoard = [
 	['0','0','0','0','0','0','0']
 ];
 var myTurn = true;
+var turnCount = 0;
 
 socket.on('connect', function() {
 	
@@ -254,7 +255,8 @@ $('body').on('click', 'td', function(){
 				moveLocation: enteredMove,
 				// turnIdentifier: playerAssignment, // would this be needed?
 				player: playerAssignment, // Whether player is X or Y
-				boardState: gameBoard // pass the game board to client
+				boardState: gameBoard, // pass the game board to client
+				turnsTaken: ++turnCount
 				// server does not need to send gameboard back because we prevent client from placing on an existing tile - this could result in major bugs if client manipulates DOM
 			});
 		}
@@ -262,6 +264,7 @@ $('body').on('click', 'td', function(){
 	else{
 		alert('Not your turn');
 	}
+
 });
 
 socket.on('validMove', function(validmove) {

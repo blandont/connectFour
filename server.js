@@ -329,14 +329,15 @@ io.on('connection', function(socket) {
 		// console.log(gameBoard);
 
 		gameState = checkGameState(gameBoard);
+
 		if ((gameState == 'X') || (gameState == 'Y')){
 			// socket.emit('gameOver', gameState);
 			// io.to(connectedUsers[socket.id].room).emit('gameOver', gameState);
 			io.in(connectedUsers[socket.id].room).emit('gameOver', gameState);
 			// console.log('winner winner chicken dinner');
 		} 
-		// Draw if all of top row is filled out
-		else if(gameBoard[0][0] && gameBoard[0][1] && gameBoard[0][2] && gameBoard[0][3] && gameBoard[0][4] && gameBoard[0][5] && gameBoard[0][6] != '0'){
+		// Draw if it's player 2 last turn and the game hasn't been won yet - then it's a tie
+		else if((validmove.turnsTaken == 21) && (validmove.player == 'Y')){
 			// console.log("its a bonafide tie!");
 			io.in(connectedUsers[socket.id].room).emit('gameOver', 'draw');
 		}
@@ -374,23 +375,6 @@ io.on('connection', function(socket) {
 
 			return 'No Winner';
 		}
-
-		// Check game state
-		// if (fourConnected){
-		// 	// console.log("Invalid / command");
-		// 	socket.emit('gameOver', {
-		// 		username: 'System',
-		// 		text: 'Invalid slash command or invalid format',
-		// 		timestamp: moment().valueOf(),
-		// 		color: '#808080'
-		// 	});
-		// }
-		// else{
-		// 	socket.emit('changeTurn'{
-		// 		player: 'someplayer',
-		// 		turn: true // or false
-		// 	})
-		// }
 
 	});
 });

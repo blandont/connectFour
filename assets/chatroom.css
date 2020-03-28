@@ -188,7 +188,8 @@ td {
 }
 
 .xPiece{
-    background-color: darkblue;
+    /* background-color: darkblue; */
+    background-color: yellow;
 }
 
 .yPiece{
