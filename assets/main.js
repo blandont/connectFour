@@ -302,3 +302,8 @@ socket.on('gameOver', function(winner){
 	}
 	// location.reload();
 });
+
+// Theme Changing
+$('body').on('click', 'label', function(){
+	console.log('video killed the radio star');
+})
