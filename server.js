@@ -61,17 +61,6 @@ io.on('connection', function(socket) {
 		// if (req.cookie == false){
 		// 	req.username = chance.animal(); // generate new name if no cookie
 		// }
-        // connectedUsers.push(socket.id);
-        // connectedUsers[socket.id]['username'] = newUserName;
-        // console.log(connectedUsers);
-		
-		// generate another name if taken - for connect 4 duplicate name is okay
-		// Object.keys(connectedUsers).forEach(function(socketID) {
-		// 	while (connectedUsers[socketID].username.toLowerCase() === req.username.toLowerCase()) {
-		// 		req.username = chance.animal();
-		// 		console.log("name taken, trying new name: " + req.username);
-        //     }
-		// });
 		
 		// If random was selected
 		if (req.random == true){
@@ -88,6 +77,9 @@ io.on('connection', function(socket) {
 			let joinedRandRoom = false;
 			// for (i=0; i<randomRooms.length; i++){
 			while (joinedRandRoom == false){
+				// Add user to connected users object
+				connectedUsers[socket.id] = req;
+				connectedUsers[socket.id].userID = socket.id;
 				for (i=0; i<randomRooms.length; i++){
 					req.room = randomRooms[i]; // set room of user to random room
 					
@@ -98,13 +90,20 @@ io.on('connection', function(socket) {
 					}
 					else{
 						joinedRandRoom = true;
-						if (io.nsps['/'].adapter.rooms[randomRooms[i]].length > 1){ // if 1 person already in room
+						if (io.nsps['/'].adapter.rooms[randomRooms[i]].length > 1){ // if 1 person already in room when joining - then 2 ppl in room
 							socket.emit('assignment', {
 								value: 'Y'
 							});
 							io.in(randomRooms[i]).emit('gameWaiting', false);
+							// console.log(io.sockets.adapter.rooms[randomRooms[i]].sockets); // client IDs of those present in room
+							let roomUsers = io.sockets.adapter.rooms[randomRooms[i]].sockets;
+							// for each key in the object of connected users
+							Object.keys(roomUsers).forEach(function(clientID){
+								// console.log(connectedUsers[clientID].username);
+								io.in(randomRooms[i]).emit('opponentName',connectedUsers[clientID].username); // emit all connected users in room to client
+							})
 						}
-						else{ // room has 2 people now
+						else{ // else wait for another person to join
 							socket.emit('assignment', {
 								value: 'X'
 							});
@@ -115,8 +114,6 @@ io.on('connection', function(socket) {
 				if (joinedRandRoom == false){ // create a new room when all existing rooms are full
 					randomRooms.push("randomroom" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101) + "" + Math.floor(Math.random() * 101));
 				}
-				connectedUsers[socket.id] = req;
-				connectedUsers[socket.id].userID = socket.id;
 			}
 			io.emit('usersPresent', connectedUsers); // send a data struct of all current users to client
 			io.emit('roomsOnline', onlineRooms); // write clientside room list
@@ -173,6 +170,13 @@ io.on('connection', function(socket) {
 					}
 					else if (connectedClients.length == 2){
 						io.in(connectedUsers[socket.id].room).emit('gameWaiting', false);
+						
+						let roomUsers = io.sockets.adapter.rooms[connectedUsers[socket.id].room].sockets;
+						// for each key in the object of connected users
+						Object.keys(roomUsers).forEach(function(clientID){
+							// console.log(connectedUsers[clientID].username);
+							io.in(connectedUsers[socket.id].room).emit('opponentName',connectedUsers[clientID].username); // emit all connected users in room to client
+						})
 					}
 					
 					if (connectedClients.length > 1){ // if 1 person already in room

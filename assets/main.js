@@ -12,6 +12,7 @@ var $joinGame = $('#joinForm');
 var $msgForm = $('#messageForm');
 var $messageArea = $('#messagesArea');
 let $username;
+let $opponent = "SecretMan";
 var usersOnline = {}; // equivalent to connectedUsers in serverside
 var gameRoomsOnline = []; // equivalent to onlineRooms in serverside
 var gameRandRoomsOnline = [];
@@ -121,15 +122,24 @@ socket.on('usersPresent', function(connectedUsers){
 	// $username = usersOnline[socket.id].username;
 	document.cookie = "username=" + $username; //set cookie in case of nickname change
 	// console.log(document.cookie);
-	$(".roomTitle").text('Welcome to the chatroom, ' + $username + '!'); // change name display at top
-	
-	let allUsers = "";
-	Object.keys(connectedUsers).forEach(function(socketID){
-		// console.log(connectedUsers[socketID].username); // get all usernames present in chatroom
-		allUsers += "<div class='userDisplay'><span style='color: "+ connectedUsers[socketID].color +";'><strong>" + connectedUsers[socketID].username + "</strong></span></div>"; // change color of name in online list as well
-		// console.log(allUsers);
-	});
+	// $(".roomTitle").text("Welcome to the game, " + $username + "!"); // change name display at top
+	// console.log(usersOnline);
+	// let allUsers = "";
+	// Object.keys(connectedUsers).forEach(function(socketID){
+	// 	// console.log(connectedUsers[socketID].username); // get all usernames present in chatroom
+	// 	allUsers += "<div class='userDisplay'><span style='color: "+ connectedUsers[socketID].color +";'><strong>" + connectedUsers[socketID].username + "</strong></span></div>"; // change color of name in online list as well
+	// 	// console.log(allUsers);
+	// });
 	// $('#usersContainer').html(allUsers); // display all users
+});
+
+socket.on('opponentName', function(foeName){
+	if (foeName != $username){
+		$opponent = foeName;
+		// console.log("testing");
+		$(".roomTitle").text("Welcome to the game, " + $username + "! Your opponent is " + $opponent);
+	}
+	
 });
 
 // not used yet
@@ -148,14 +158,22 @@ socket.on('randomRoomsOnline', function(randomRooms){
 
 socket.on('assignment', function(assignmentType){
 	playerAssignment = assignmentType.value;
+	$(".turnMessage").text("Your move first!");
 	if (playerAssignment == 'Y'){
 		myTurn = false;
+		$(".turnMessage").text("Awaiting opponents move...");
 	}
-	console.log(playerAssignment);
+	// console.log(playerAssignment);
 });
 
 socket.on('turnChange', function(){
 	myTurn = !myTurn;
+	if (myTurn){
+		$(".turnMessage").text("It's your turn " + $username + "!"); 
+	}
+	else{
+		$(".turnMessage").text($opponent + " is thinking...");
+	}
 	// console.log(myTurn);
 })
 
