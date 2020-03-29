@@ -304,13 +304,15 @@ socket.on('gameOver', function(winner){
 });
 
 // Theme Changing
-// theme 1
+// theme 1 -TODO: should be onchange? to force programmatic changes and not just clicks?
 $('#theme1Label').on('click', function(){
 	// console.log('video killed the radio star');
 	// $('#gameBoard td').toggleClass('theme1');
 	$('#gameBoard td').addClass('theme1');
 	$('#gameBoard td').removeClass('theme2');
 	$('#gameBoard td').removeClass('theme3');
+	document.cookie = "themechoice=" + 'theme1'; //set cookie in case of nickname change
+	console.log(document.cookie);
 })
 // theme 2
 $('#theme2Label').on('click', function(){
@@ -318,6 +320,8 @@ $('#theme2Label').on('click', function(){
 	$('#gameBoard td').addClass('theme2');
 	$('#gameBoard td').removeClass('theme1');
 	$('#gameBoard td').removeClass('theme3');
+	document.cookie = "themechoice=" + 'theme2'; //set cookie in case of nickname change
+	console.log(document.cookie);
 })
 // theme 3
 $('#theme3Label').on('click', function(){
@@ -325,4 +329,6 @@ $('#theme3Label').on('click', function(){
 	$('#gameBoard td').addClass('theme3');
 	$('#gameBoard td').removeClass('theme1');
 	$('#gameBoard td').removeClass('theme2');
+	document.cookie = "themechoice=" + 'theme3'; //set cookie in case of nickname change
+	console.log(document.cookie);
 })
