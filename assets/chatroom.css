@@ -212,9 +212,9 @@ td {
 }
 
 /* Theme Selector */
-.themeSelect {
+/* .themeSelect {
     display: none;
-}
+} */
 
 .themeSelect:checked + label {
     background-color: royalblue;
