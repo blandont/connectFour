@@ -304,6 +304,25 @@ socket.on('gameOver', function(winner){
 });
 
 // Theme Changing
-$('body').on('click', 'label', function(){
-	console.log('video killed the radio star');
+// theme 1
+$('#theme1Label').on('click', function(){
+	// console.log('video killed the radio star');
+	// $('#gameBoard td').toggleClass('theme1');
+	$('#gameBoard td').addClass('theme1');
+	$('#gameBoard td').removeClass('theme2');
+	$('#gameBoard td').removeClass('theme3');
+})
+// theme 2
+$('#theme2Label').on('click', function(){
+	// console.log('video killed the radio star');
+	$('#gameBoard td').addClass('theme2');
+	$('#gameBoard td').removeClass('theme1');
+	$('#gameBoard td').removeClass('theme3');
+})
+// theme 3
+$('#theme3Label').on('click', function(){
+	// console.log('video killed the radio star');
+	$('#gameBoard td').addClass('theme3');
+	$('#gameBoard td').removeClass('theme1');
+	$('#gameBoard td').removeClass('theme2');
 })

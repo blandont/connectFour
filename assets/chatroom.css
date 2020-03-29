@@ -180,7 +180,7 @@ display: flex;
     margin: 1rem auto;
     border-collapse: separate;
 }
-/* should do every td that is child of gameboard */
+/* should change to every td that is child of gameboard */
 td {
     padding: 1rem 1.2rem;
     border-radius: 5rem;
@@ -191,11 +191,34 @@ td {
     /* background-color: darkblue; */
     background-color: yellow;
 }
-
 .yPiece{
     background-color: darkred;
 }
 
+/* Theme 2 */
+.xPiece.theme2{
+    background-color: royalblue !important;
+}
+.yPiece.theme2{
+    background-color: rgb(21, 224, 55) !important;
+}
+
+/* Theme 3 */
+.xPiece.theme3{
+    background-color: rgb(194, 34, 194) !important;
+}
+.yPiece.theme3{
+    background-color: rgb(235, 164, 13) !important;
+}
+
+/* Theme Selector */
+.themeSelect {
+    display: none;
+}
+
+.themeSelect:checked + label {
+    background-color: royalblue;
+}
 
 /* Modal CSS*/
 .modal {
@@ -218,14 +241,5 @@ margin: 15% auto; /* 15% from the top and centered */
 padding: 20px;
 border: 1px solid #888;
 width: 70%; /* Could be more or less, depending on screen size */
-}
-
-/* Theme Selector */
-.themeSelect {
-    display: none;
-}
-
-.themeSelect:checked + label {
-    background-color: royalblue;
 }
   
