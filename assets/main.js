@@ -309,43 +309,22 @@ socket.on('gameOver', function(winner){
 });
 
 // Theme Changing
-// theme 1 -TODO: should be onchange? to force programmatic changes and not just clicks?
+// theme 1
 $('#theme1Label').on('click', function(){
-// $('#theme1').on('change', function(){
-// 	// console.log('video killed the radio star');
-// 	// $('#gameBoard td').toggleClass('theme1');
 	switchTheme('theme1');
-// 	$('#gameBoard td').addClass('theme1');
-// 	$('#gameBoard td').removeClass('theme2');
-// 	$('#gameBoard td').removeClass('theme3');
-// 	document.cookie = "themechoice=" + 'theme1'; //set cookie in case of nickname change
-// 	console.log(document.cookie);
 });
 
 // theme 2
 $('#theme2Label').on('click', function(){
-// $('#theme2').on('change', function(){
-// 	// console.log('video killed the radio star');
 	switchTheme('theme2');
-// 	$('#gameBoard td').addClass('theme2');
-// 	$('#gameBoard td').removeClass('theme1');
-// 	$('#gameBoard td').removeClass('theme3');
-// 	document.cookie = "themechoice=" + 'theme2'; //set cookie in case of nickname change
-// 	console.log(document.cookie);
 });
 
 // theme 3
 $('#theme3Label').on('click', function(){
-// $('#theme3').on('change', function(){
-// 	// console.log('video killed the radio star');
 	switchTheme('theme3');
-// 	$('#gameBoard td').addClass('theme3');
-// 	$('#gameBoard td').removeClass('theme1');
-// 	$('#gameBoard td').removeClass('theme2');
-// 	document.cookie = "themechoice=" + 'theme3'; //set cookie in case of nickname change
-// 	console.log(document.cookie);
 });
 
+// Set appropriate styles and cookie
 function switchTheme(themechosen){
 	if(themechosen == 'theme1'){
 		$('#gameBoard td').addClass('theme1');
@@ -365,36 +344,3 @@ function switchTheme(themechosen){
 	document.cookie = "themechoice=" + themechosen; //set cookie in case of nickname change
 	console.log(document.cookie);
 }
-
-// $('label').on('click', function(){
-// 	console.log("crazy on you");
-// 	setTheme();
-
-// });
-
-// function setTheme(){
-// 	if ($('#theme1').prop("checked", true)){
-// 		console.log("bolbi");
-// 		$('#gameBoard td').addClass('theme1');
-// 		$('#gameBoard td').removeClass('theme2');
-// 		$('#gameBoard td').removeClass('theme3');
-// 		document.cookie = "themechoice=" + 'theme1'; //set cookie in case of nickname change
-// 		console.log(document.cookie);
-// 	}
-// 	else if($('#theme2').prop("checked", true)){
-// 		console.log("bolbi2");
-// 		$('#gameBoard td').addClass('theme2');
-// 		$('#gameBoard td').removeClass('theme1');
-// 		$('#gameBoard td').removeClass('theme3');
-// 		document.cookie = "themechoice=" + 'theme2'; //set cookie in case of nickname change
-// 		console.log(document.cookie);
-// 	}
-// 	else if ($('#theme3').prop("checked", true)){
-// 		console.log("bolbi3");
-// 		$('#gameBoard td').addClass('theme3');
-// 		$('#gameBoard td').removeClass('theme1');
-// 		$('#gameBoard td').removeClass('theme2');
-// 		document.cookie = "themechoice=" + 'theme3'; //set cookie in case of nickname change
-// 		console.log(document.cookie);
-// 	}
-// }
