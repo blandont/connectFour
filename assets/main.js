@@ -182,7 +182,7 @@ socket.on('turnChange', function(){
 		$(".turnMessage").text("It's your turn " + $username + "!"); 
 	}
 	else{
-		$(".turnMessage").text($opponent + " is thinking...");
+		$(".turnMessage").text($opponent + " is thinking ...");
 	}
 	// console.log(myTurn);
 })

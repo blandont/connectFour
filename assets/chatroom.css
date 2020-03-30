@@ -23,6 +23,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    /* text-align: center; */
     height: 100vh;
     background-image: url("/mountains.jpg");
     font-family: Helvetica, sans-serif;
@@ -242,4 +243,150 @@ padding: 20px;
 border: 1px solid #888;
 width: 70%; /* Could be more or less, depending on screen size */
 }
+
+
+
+
+/* Welcome Page - CSS stylings adapted from the following sources:
+    * https://freefrontend.com/css-input-text/
+    *
+*/
+#uniqueCode{
+    color: rgb(50, 62, 167);
+}
+h1, .welcomeDescrip > p {
+    font-family: 'Exo 2';
+}
+* { box-sizing:border-box; }
+#errorMsg {
+    color: rgb(211, 35, 35);
+    font-family: 'Consolas';
+}
+.container { 
+  font-family:'Roboto';
+  width:600px; 
+  margin:30px auto 0; 
+  display:block; 
+  background:#FFF;
+  padding:10px 50px 50px;
+}
+h2 { 
+  text-align:center; 
+  margin-bottom:50px; 
+}
+h2 small { 
+  font-weight:normal; 
+  color:#888; 
+  display:block; 
+}
+.footer 	{ text-align:center; }
+.footer a  { color:#53B2C8; }
+
+/* form starting stylings ------------------------------- */
+.group 			  { 
+  position:relative; 
+  margin-bottom:45px; 
+}
+.welcomePageInput {
+  font-size:18px;
+  padding:10px 10px 10px 5px;
+  display:block;
+  width:300px;
+  border:none;
+  border-bottom:1px solid #757575;
+}
+.welcomePageInput:focus { outline:none; }
+
+/* active state */
+.welcomePageInput:focus ~ label, input:valid ~ label 		{
+  top:-20px;
+  font-size:14px;
+  color:#5264AE;
+}
+
+/* BOTTOM BARS ================================= */
+.bar 	{ position:relative; display:block; width:300px; }
+.bar:before, .bar:after 	{
+  content:'';
+  height:2px; 
+  width:0;
+  bottom:1px; 
+  position:absolute;
+  background:rgb(33, 61, 177); 
+  transition:0.2s ease all; 
+  -moz-transition:0.2s ease all; 
+  -webkit-transition:0.2s ease all;
+}
+.bar:before {
+  left:50%;
+}
+.bar:after {
+  right:50%; 
+}
+
+/* active state */
+.welcomePageInput:focus ~ .bar:before, input:focus ~ .bar:after {
+  width:50%;
+}
+
+/* active state */
+.welcomePageInput:focus ~ .highlight {
+  -webkit-animation:inputHighlighter 0.3s ease;
+  -moz-animation:inputHighlighter 0.3s ease;
+  animation:inputHighlighter 0.3s ease;
+}
+
+/* ANIMATIONS ================ */
+@-webkit-keyframes inputHighlighter {
+	from { background:#5264AE; }
+  to 	{ width:0; background:transparent; }
+}
+@-moz-keyframes inputHighlighter {
+	from { background:#5264AE; }
+  to 	{ width:0; background:transparent; }
+}
+@keyframes inputHighlighter {
+	from { background:#5264AE; }
+  to 	{ width:0; background:transparent; }
+}
   
+
+/* CSS Buttons Welcome Page 
+    * Style adapted from
+    *  http://cssdeck.com/labs/purely-css
+    * https://freshdesignweb.com/css3-buttons/
+*/
+.hot-container p { margin-top: 10px; }
+.welcomeBtn { text-decoration: none; margin: 0 10px; }
+
+.hot-container {
+	min-height: 100px;
+	margin-top: 100px;
+	width: 100%;
+	text-align: center;
+}
+
+input.welcomeBtn {
+	display: inline-block;
+	color: #666;
+	background-color: #eee;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-size: 12px;
+	padding: 10px 30px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border: 1px solid rgba(0,0,0,0.3);
+	border-bottom-width: 3px;
+}
+
+input.welcomeBtn:hover {
+    background-color: #e3e3e3;
+    border-color: rgba(0,0,0,0.5);
+}
+
+input.welcomeBtn:active {
+    background-color: #CCC;
+    border-color: rgba(0,0,0,0.9);
+}

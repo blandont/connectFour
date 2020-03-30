@@ -20,26 +20,38 @@
 		<div >
 			<div >
 				<form id="joinForm">
-					<h2>Connect Four</h2>
-					<input type="text" name="username" autocomplete="off" placeholder="Enter your username" >
+					<h1>Connect Four</h1>
 					<br>
-					<input type="text" name="room" autocomplete="off" placeholder="Enter a unique game code" >
+					<input class="welcomePageInput" type="text" name="username" autocomplete="off" placeholder="Enter your username" spellcheck="false">
+					<span class="highlight"></span>
+					<span class="bar"></span>
+					<label>Username</label>
+					
+					<input class="welcomePageInput" type="text" name="room" autocomplete="off" placeholder="Enter a unique game code" >
+					<span class="highlight"></span>
+					<span class="bar"></span>
+					<label>Room Code</label>
+
 					<p id="errorMsg"></p>
-					<input type="submit" value="Join Game">
+
+					<input class="welcomeBtn" type="submit" value="Join Game">
+					
 				</form>
 				
 			</div>	
 		</div>
 		<div >
-			<div >
-				<p>Give this unique code to your friend (and enter it yourself): </p>
+			<div class='welcomeDescrip'>
+				<br>
+				<p>Give this unique code to your friend (and enter it yourself) </p>
 				<h3 id='uniqueCode'>someUniqueCode</h3>
-				<p>or enter a code given to you by a friend</p>
-				<p>The game will begin when a valid code is entered</p>	
+				<p>Or enter a code given to you by a friend</p>
+				<p>The game will begin when a valid code is entered</p>
+				<br>
 			</div>
 			<div>
 				<form id="randomGame">
-					<input type="submit" value="Join Random Game">
+					<input class="welcomeBtn" type="submit" value="Join Random Game">
 				</form>
 			</div>
 
@@ -99,11 +111,11 @@
 				<div>
 					<!-- <input name='theme' type='radio' id='theme1' class='themeSelect' checked> -->
 					<input name='theme' type='radio' id='theme1' class='themeSelect'>
-					<label id='theme1Label' for='theme1'> Theme 1</label>
+					<label id='theme1Label' for='theme1' class='themeLabel'> Theme 1</label>
 					<input name='theme' type='radio' id='theme2' class='themeSelect'>
-					<label id='theme2Label' for='theme2'> Theme 2</label>
+					<label id='theme2Label' for='theme2' class='themeLabel'> Theme 2</label>
 					<input name='theme' type='radio' id='theme3' class='themeSelect'>
-					<label id='theme3Label' for='theme3'> Theme 3</label>
+					<label id='theme3Label' for='theme3' class='themeLabel'> Theme 3</label>
 				</div>
 			</section>
 		</form>
