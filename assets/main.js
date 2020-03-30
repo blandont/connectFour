@@ -330,16 +330,25 @@ function switchTheme(themechosen){
 		$('#gameBoard td').addClass('theme1');
 		$('#gameBoard td').removeClass('theme2');
 		$('#gameBoard td').removeClass('theme3');
+		$('body').addClass('theme1');
+		$('body').removeClass('theme2');
+		$('body').removeClass('theme3');
 	}
 	else if(themechosen == 'theme2'){
 		$('#gameBoard td').addClass('theme2');
 		$('#gameBoard td').removeClass('theme1');
 		$('#gameBoard td').removeClass('theme3');
+		$('body').addClass('theme2');
+		$('body').removeClass('theme1');
+		$('body').removeClass('theme3');
 	}
 	else if(themechosen == 'theme3'){
 		$('#gameBoard td').addClass('theme3');
 		$('#gameBoard td').removeClass('theme1');
 		$('#gameBoard td').removeClass('theme2');
+		$('body').addClass('theme3');
+		$('body').removeClass('theme1');
+		$('body').removeClass('theme2');
 	}
 	document.cookie = "themechoice=" + themechosen; //set cookie in case of nickname change
 	console.log(document.cookie);

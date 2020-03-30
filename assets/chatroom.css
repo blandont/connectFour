@@ -95,53 +95,6 @@ body {
 }
 
 
-
-/* Begin message styling */
-.sysMsg {
-    font-family: 'Consolas';
-    text-align: center;
-    font-weight: bold;
-}
-.msg {
-display: flex;
-    align-items: flex-end;
-    margin-bottom: 10px;
-}
-.msg:last-of-type {
-    margin: 0;
-}
-.msgBubble {
-    max-width: 450px;
-    padding: 15px;
-    border-radius: 15px;
-    background: var(--left-msg-bg);
-}
-.left-msg .msgBubble {
-    border-bottom-left-radius: 0;
-}
-
-.right-msg {
-    flex-direction: row-reverse;
-}
-.right-msg .msgBubble {
-    background: var(--right-msg-bg);
-    border-bottom-right-radius: 0;
-}
-.msgInfo {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-.msgInfo-name {
-    margin-right: 10px;
-    font-weight: bold;
-}
-.msgInfo-time {
-    font-size: 0.80em;
-}
-
-
 /* Begin Form field stylings */
 #messageForm {
     display: flex;
@@ -154,21 +107,6 @@ display: flex;
     border: none;
     border-radius: 3px;
     font-size: 1em;
-}
-.msgSendBtn {
-    margin-left: 10px;
-    background: #787878;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.23s;
-}
-.msgSendBtn:hover {
-    background: #303030;
-}
-#messageInput {
-    flex: 1;
-    background: #ddd;
 }
 
 
@@ -186,14 +124,18 @@ td {
     padding: 1rem 1.2rem;
     border-radius: 5rem;
     border: 1px solid black;
+    box-shadow: 10px 10px 5px rgb(27, 25, 25);
 }
 
 .xPiece{
     /* background-color: darkblue; */
-    background-color: yellow;
+    background-color: #797979;
 }
 .yPiece{
-    background-color: darkred;
+    background-color: rgb(32, 6, 6);
+}
+body.theme1{
+    background-image: url("/mountains.jpg");
 }
 
 /* Theme 2 */
@@ -203,13 +145,19 @@ td {
 .yPiece.theme2{
     background-color: rgb(21, 224, 55) !important;
 }
+body.theme2{
+    background-image: url("/theme2landscape.jpg");
+}
 
 /* Theme 3 */
 .xPiece.theme3{
-    background-color: rgb(194, 34, 194) !important;
+    background-color:yellow !important;
 }
 .yPiece.theme3{
-    background-color: rgb(235, 164, 13) !important;
+    background-color: darkred !important;
+}
+body.theme3{
+    background-image: url("/steampunk.jpg");
 }
 
 /* Theme Selector */

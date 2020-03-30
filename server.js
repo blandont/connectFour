@@ -3,7 +3,7 @@
 // Server side code
 /**
  * 
- * TODO: the gameboard should be a unique gameboard per room - right now it is a global space gameboard across all rooms
+ * Code adapted from assignment 3 submission
  * 
  */
 
