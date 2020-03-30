@@ -351,5 +351,5 @@ function switchTheme(themechosen){
 		$('body').removeClass('theme2');
 	}
 	document.cookie = "themechoice=" + themechosen; //set cookie in case of nickname change
-	console.log(document.cookie);
+	// console.log(document.cookie);
 }

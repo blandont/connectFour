@@ -128,11 +128,10 @@ td {
 }
 
 .xPiece{
-    /* background-color: darkblue; */
-    background-color: #797979;
+    background: linear-gradient(to bottom left, #000000 34%, #ffffff 144%);
 }
 .yPiece{
-    background-color: rgb(32, 6, 6);
+    background: linear-gradient(to bottom right, #000000 -21%, #ffcccc 109%);
 }
 body.theme1{
     background-image: url("/mountains.jpg");
@@ -140,10 +139,10 @@ body.theme1{
 
 /* Theme 2 */
 .xPiece.theme2{
-    background-color: royalblue !important;
+    background: linear-gradient(to bottom, #33ccff 0%, #ff99cc 100%);
 }
 .yPiece.theme2{
-    background-color: rgb(21, 224, 55) !important;
+    background: linear-gradient(to top, #000066 0%, #6666ff 90%);
 }
 body.theme2{
     background-image: url("/theme2landscape.jpg");
@@ -151,10 +150,10 @@ body.theme2{
 
 /* Theme 3 */
 .xPiece.theme3{
-    background-color:yellow !important;
+    background: linear-gradient(to right, #ffffff -10%, #ffff66 106%);
 }
 .yPiece.theme3{
-    background-color: darkred !important;
+    background: linear-gradient(to left, #ffccff -11%, #993300 101%);
 }
 body.theme3{
     background-image: url("/steampunk.jpg");
@@ -166,7 +165,8 @@ body.theme3{
 }
 
 .themeSelect:checked + label {
-    background-color: royalblue;
+    background-color: #9094a0;
+    color: black !important;
 }
 
 /* Modal CSS*/
